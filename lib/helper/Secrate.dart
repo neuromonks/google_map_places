@@ -1,4 +1,4 @@
-class Screate {
+class Secrate {
   // static String payUKey = 'scpKuz';
   // static String payUSalt = 'Y3CQ3Xcb';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_map_places/modelAdress.dart';
+import 'package:google_map_places/models/modelAdress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'WidgetGoogleMap.dart';

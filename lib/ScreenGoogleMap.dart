@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
-import 'package:google_map_places/HelperFucations.dart';
-import 'package:google_map_places/modelAdress.dart';
-import 'package:google_map_places/secrate.dart';
+import 'package:google_map_places/helper/HelperFunctions.dart';
+import 'package:google_map_places/models/modelAdress.dart';
+import 'package:google_map_places/helper/Secrate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
@@ -70,7 +70,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
     String baseURL =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request =
-        '$baseURL?input=$input&key=${Screate.googleMapKey}&sessiontoken=$_sessionToken&location=${_lastMapPosition.latitude},${_lastMapPosition.longitude}&radius=1500';
+        '$baseURL?input=$input&key=${Secrate.googleMapKey}&sessiontoken=$_sessionToken&location=${_lastMapPosition.latitude},${_lastMapPosition.longitude}&radius=1500';
     print(request);
     await http.get(request).then((response) {
       if (response.statusCode == 200) {
@@ -93,7 +93,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
 
   dynamic getLatLongFromPlaceId(String placeId) async {
     String request =
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=${Screate.googleMapKey}';
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=${Secrate.googleMapKey}';
     await http.get(request).then((response) {
       if (response.statusCode == 200) {
         print('adf');
@@ -113,7 +113,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
   }
 
   checkIsGpsOn() async {
-    bool isGpsOn = await HelpterFuncation.isGps();
+    bool isGpsOn = await HelperFunction.isGps();
     if (isGpsOn) {
       await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high)
@@ -127,7 +127,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
         });
       });
     } else {
-      HelpterFuncation.gpsAlert(context).then((val) {
+      HelperFunction.gpsAlert(context).then((val) {
         Future.delayed(const Duration(seconds: 3), () {
           checkIsGpsOn();
         });
@@ -189,7 +189,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
                         polylines: polylines,
                         onMapCreated: (GoogleMapController controller) {
                           //_onMapCreated(controller);
-                          controller.setMapStyle(Screate.mapJson);
+                          controller.setMapStyle(Secrate.mapJson);
 
                           _controller.complete(controller);
                         },
@@ -340,7 +340,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
   Future<void> _handlePressButton() async {
     Prediction p = await PlacesAutocomplete.show(
       context: context,
-      apiKey: Screate.googleMapKey,
+      apiKey: Secrate.googleMapKey,
       onError: onError,
       mode: Mode.overlay,
       language: "En",
@@ -369,7 +369,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
       Completer<GoogleMapController> _controller) async {
     if (p != null) {
       PlacesDetailsResponse detail =
-          await GoogleMapsPlaces(apiKey: Screate.googleMapKey)
+          await GoogleMapsPlaces(apiKey: Secrate.googleMapKey)
               .getDetailsByPlaceId(p.placeId);
       return detail;
     }
