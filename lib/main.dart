@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_map_places/models/modelAdress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'WidgetGoogleMap.dart';
+import 'ScreenGoogleMap.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,11 +25,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: WidgetGoogleMap(),
+      home: ScreenGoogleMap(),
     );
   }
 }

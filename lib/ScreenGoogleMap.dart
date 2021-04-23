@@ -13,20 +13,16 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
-class WidgetGoogleMap extends StatefulWidget {
+class ScreenGoogleMap extends StatefulWidget {
   @override
-  _WidgetGoogleMapState createState() => _WidgetGoogleMapState();
+  _ScreenGoogleMapState createState() => _ScreenGoogleMapState();
 }
 
-class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
+class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
   bool isMapTypeNormal = false, isPolygonCreated = false, fullScreen = false;
 
   Set<Marker> markers = new HashSet<Marker>();
-  Set<Polyline> polylines = new HashSet<Polyline>();
-  Set<Polygon> polygons = new HashSet<Polygon>();
   Marker newMarker;
-  List<LatLng> polygonLatLongs = [];
-  List<LatLng> polylineLatLongs = [];
   double mapZoomValue = 16.5;
 
   Completer<GoogleMapController> _controller = Completer();
@@ -41,7 +37,7 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
   List<dynamic> _placeList = [];
   String _sessionToken;
   @override
-  void didUpdateWidget(covariant WidgetGoogleMap oldWidget) {
+  void didUpdateWidget(covariant ScreenGoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
 
@@ -157,116 +153,117 @@ class _WidgetGoogleMapState extends State<WidgetGoogleMap> {
     return Scaffold(
       key: homeScaffoldKey,
       body: _kGooglePlex != null
-          ? Column(
-              children: [
-                TextField(
-                  controller: _controllerSearch,
-                  decoration: InputDecoration(
-                    hintText: "Seek your location here",
-                    focusColor: Colors.white,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    prefixIcon: Icon(Icons.map),
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel),
-                      onPressed: () {},
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      GoogleMap(
-                        mapType: isMapTypeNormal
-                            ? MapType.normal
-                            : MapType.satellite,
-                        initialCameraPosition: _kGooglePlex,
-                        mapToolbarEnabled: false,
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: true,
-                        zoomControlsEnabled: true,
-                        markers: markers,
-                        polygons: polygons,
-                        polylines: polylines,
-                        onMapCreated: (GoogleMapController controller) {
-                          //_onMapCreated(controller);
-                          controller.setMapStyle(Secrate.mapJson);
-
-                          _controller.complete(controller);
-                        },
-                        onCameraMove: (position) async {
-                          // if (widget.onCameraMove != null) {
-                          //   setState(() {
-                          //     _lastMapPosition = LatLng(
-                          //         position.target.latitude,
-                          //         position.target.longitude);
-                          //   });
-                          //   widget.onCameraMove(position);
-                          // } else {
-                          //   return null;
-                          // }
-                        },
-                        onCameraIdle: () => {
-                          // widget.onCameraIdle != null
-                          //     ? widget.onCameraIdle()
-                          //     : null,
-                          if (_lastMapPosition != null) _getLocation()
-                        },
-                        onTap: (position) {
-                          // if (widget.createPloygon != null) {
-                          //   if (!isPolygonCreated) {
-                          //     moveToNewPoition(value.latitude, value.longitude);
-                          //     generatePolyLines(position);
-                          //   }
-                          // } else {
-                          //   _lastMapPosition =
-                          //       LatLng(position.latitude, position.longitude);
-                          //   widget.onTap(position, currentAddress);
-
-                          //   _getLocation();
-                          // }
+          ? SafeArea(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _controllerSearch,
+                    decoration: InputDecoration(
+                      hintText: "Enter Place",
+                      labelText: 'Search Place',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.cancel),
+                        onPressed: () {
+                          _controllerSearch.clear();
                         },
                       ),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Container(
-                            margin: EdgeInsets.only(left: 12),
-                            child: Column(
-                              children: [
-                                actionButtion(
-                                    Icon(Icons.map_rounded,
-                                        color: Colors.grey[700]), () {
-                                  setState(() {
-                                    isMapTypeNormal = !isMapTypeNormal;
-                                  });
-                                }),
-                                // if (widget.searchedAddress != null)
-                                actionButtion(
-                                    Icon(Icons.search, color: Colors.grey[700]),
-                                    () => _handlePressButton()),
-                              ],
-                            ),
-                          )),
-                      Container(
-                        margin: EdgeInsets.only(left: 20),
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: FlatButton(
-                            textColor: Colors.white,
-                            color: Colors.grey[400],
-                            child: Text(
-                              'Show Places',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                            onPressed: () {
-                              openBottomSheet();
-                            },
-                          ),
-                        ),
-                      )
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Stack(
+                      children: <Widget>[
+                        GoogleMap(
+                          mapType: isMapTypeNormal
+                              ? MapType.normal
+                              : MapType.satellite,
+                          initialCameraPosition: _kGooglePlex,
+                          mapToolbarEnabled: false,
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: true,
+                          zoomControlsEnabled: true,
+                          markers: markers,
+                          onMapCreated: (GoogleMapController controller) {
+                            //_onMapCreated(controller);
+                            controller.setMapStyle(Secrate.mapJson);
+
+                            _controller.complete(controller);
+                          },
+                          onCameraMove: (position) async {
+                            // if (widget.onCameraMove != null) {
+                            //   setState(() {
+                            //     _lastMapPosition = LatLng(
+                            //         position.target.latitude,
+                            //         position.target.longitude);
+                            //   });
+                            //   widget.onCameraMove(position);
+                            // } else {
+                            //   return null;
+                            // }
+                          },
+                          onCameraIdle: () => {
+                            // widget.onCameraIdle != null
+                            //     ? widget.onCameraIdle()
+                            //     : null,
+                            if (_lastMapPosition != null) _getLocation()
+                          },
+                          onTap: (position) {
+                            // if (widget.createPloygon != null) {
+                            //   if (!isPolygonCreated) {
+                            //     moveToNewPoition(value.latitude, value.longitude);
+                            //     generatePolyLines(position);
+                            //   }
+                            // } else {
+                            //   _lastMapPosition =
+                            //       LatLng(position.latitude, position.longitude);
+                            //   widget.onTap(position, currentAddress);
+
+                            //   _getLocation();
+                            // }
+                          },
+                        ),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
+                              margin: EdgeInsets.only(left: 12),
+                              child: Column(
+                                children: [
+                                  actionButtion(
+                                      Icon(Icons.map_rounded,
+                                          color: Colors.grey[700]), () {
+                                    setState(() {
+                                      isMapTypeNormal = !isMapTypeNormal;
+                                    });
+                                  }),
+                                  // if (widget.searchedAddress != null)
+                                  actionButtion(
+                                      Icon(Icons.search,
+                                          color: Colors.grey[700]),
+                                      () => _handlePressButton()),
+                                ],
+                              ),
+                            )),
+                        Container(
+                          margin: EdgeInsets.only(left: 20),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: FlatButton(
+                              textColor: Colors.white,
+                              color: Colors.grey[400],
+                              child: Text(
+                                'Show Places',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              onPressed: () {
+                                openBottomSheet();
+                              },
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             )
           : Center(
               child: Column(
