@@ -66,13 +66,12 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
     String baseURL =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request =
-        '$baseURL?input=$input&key=${Secrate.googleMapKey}&sessiontoken=$_sessionToken&location=${_lastMapPosition.latitude},${_lastMapPosition.longitude}&radius=1500';
+        '$baseURL?input=$input&key=${Secrate.googleMapKey}&location=${_lastMapPosition.latitude},${_lastMapPosition.longitude}&radius=1500';
     print(request);
     await http.get(request).then((response) {
       if (response.statusCode == 200) {
         setState(() {
           _placeList = json.decode(response.body)['predictions'];
-          print(_placeList);
           if (_placeList.isNotEmpty) {
             _placeList.forEach((element) {
               getLatLongFromPlaceId(element['place_id']);
@@ -84,17 +83,25 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
       } else {
         throw Exception('Failed to load predictions');
       }
+      // getLatLongFromPlaceId('');
     });
   }
 
   dynamic getLatLongFromPlaceId(String placeId) async {
+    // newMarker = Marker(
+    //   markerId: MarkerId("marker_20.0070399_73.7598144"),
+    //   position: LatLng(20.0070399, 73.7598144),
+    // );
+    // setState(() {
+    //   markers.add(newMarker);
+    // });
     String request =
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=${Secrate.googleMapKey}';
     await http.get(request).then((response) {
       if (response.statusCode == 200) {
-        print('adf');
         var responsedata = json.decode(response.body);
         var placeDetails = responsedata['result'];
+        print(placeDetails);
         newMarker = Marker(
           markerId: MarkerId(
               "marker_${placeDetails['geometry']['location']['lat']}_${placeDetails['geometry']['location']['lng']}"),
@@ -188,38 +195,10 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
 
                             _controller.complete(controller);
                           },
-                          onCameraMove: (position) async {
-                            // if (widget.onCameraMove != null) {
-                            //   setState(() {
-                            //     _lastMapPosition = LatLng(
-                            //         position.target.latitude,
-                            //         position.target.longitude);
-                            //   });
-                            //   widget.onCameraMove(position);
-                            // } else {
-                            //   return null;
-                            // }
-                          },
-                          onCameraIdle: () => {
-                            // widget.onCameraIdle != null
-                            //     ? widget.onCameraIdle()
-                            //     : null,
-                            if (_lastMapPosition != null) _getLocation()
-                          },
-                          onTap: (position) {
-                            // if (widget.createPloygon != null) {
-                            //   if (!isPolygonCreated) {
-                            //     moveToNewPoition(value.latitude, value.longitude);
-                            //     generatePolyLines(position);
-                            //   }
-                            // } else {
-                            //   _lastMapPosition =
-                            //       LatLng(position.latitude, position.longitude);
-                            //   widget.onTap(position, currentAddress);
-
-                            //   _getLocation();
-                            // }
-                          },
+                          onCameraMove: (position) async {},
+                          onCameraIdle: () =>
+                              {if (_lastMapPosition != null) _getLocation()},
+                          onTap: (position) {},
                         ),
                         Align(
                             alignment: Alignment.topLeft,
@@ -295,10 +274,14 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
         builder: (BuildContext context) {
           return ListView.builder(
               shrinkWrap: true,
+              padding: EdgeInsets.symmetric(horizontal: 15),
               itemCount: _placeList.length,
               itemBuilder: (context, index) {
                 var addressDetails = _placeList[index];
-                return Text('${addressDetails.description}');
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: Text('${addressDetails.description}'),
+                );
               });
         });
   }
