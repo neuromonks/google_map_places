@@ -34,7 +34,7 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
   ModelAddress currentAddress = new ModelAddress();
-  List<dynamic> _placeList = [];
+  List<ModelAddress> _placeList = [];
   String _sessionToken;
   @override
   void didUpdateWidget(covariant ScreenGoogleMap oldWidget) {
@@ -71,9 +71,9 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
     await http.get(request).then((response) {
       if (response.statusCode == 200) {
         setState(() {
-          _placeList = json.decode(response.body)['predictions'];
-          if (_placeList.isNotEmpty) {
-            _placeList.forEach((element) {
+          List listTemp = json.decode(response.body)['predictions'];
+          if (listTemp.isNotEmpty) {
+            listTemp.forEach((element) {
               getLatLongFromPlaceId(element['place_id']);
             });
           } else {
@@ -110,6 +110,9 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
         );
         setState(() {
           markers.add(newMarker);
+          _placeList.add(ModelAddress(
+              mainText: '${placeDetails['name']}',
+              description: '${placeDetails['formatted_address']}'));
         });
       }
     });
@@ -272,6 +275,11 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
         context: context,
         isScrollControlled: true,
         builder: (BuildContext context) {
+          if (_placeList.isEmpty) {
+            return Center(
+              child: Text('No location available'),
+            );
+          }
           return ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.symmetric(horizontal: 15),
@@ -280,7 +288,12 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
                 var addressDetails = _placeList[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 15),
-                  child: Text('${addressDetails.description}'),
+                  child: Column(
+                    children: [
+                      Text(
+                          '${addressDetails.mainText},${addressDetails.description}'),
+                    ],
+                  ),
                 );
               });
         });

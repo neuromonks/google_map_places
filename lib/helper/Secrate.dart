@@ -1,13 +1,5 @@
 class Secrate {
-  // static String payUKey = 'scpKuz';
-  // static String payUSalt = 'Y3CQ3Xcb';
-
-  static String payUKey = 'lebCJA';
-  static String payUSalt = 'z5YyOP8R';
-  static String googleMapKey = 'AIzaSyBQ4k6YwoYxIKntmKvREbBercDYkUB6hSI';
-  static String aesIv = 'hrq35yghe5r4fhu3';
-  static String aesKey = 'dISAvOCtzp986Y45';
-
+  static String googleMapKey = '';
   static String mapJson = """
 [
   {
