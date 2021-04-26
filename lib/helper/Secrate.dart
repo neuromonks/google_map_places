@@ -1,5 +1,6 @@
 class Secrate {
-  static String googleMapKey = '';
+  static String googleMapKey = 'AIzaSyCBilxMFG2bJBL_fq_mKQhHNUsCBxeCq2g';
+  // 'AIzaSyBQ4k6YwoYxIKntmKvREbBercDYkUB6hSI';
   static String mapJson = """
 [
   {

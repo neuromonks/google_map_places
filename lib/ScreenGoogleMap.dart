@@ -97,23 +97,35 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
     // });
     String request =
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=${Secrate.googleMapKey}';
-    await http.get(request).then((response) {
+    await http.get(request).then((response) async {
       if (response.statusCode == 200) {
         var responsedata = json.decode(response.body);
         var placeDetails = responsedata['result'];
-        print(placeDetails);
+        // print(placeDetails);
         newMarker = Marker(
           markerId: MarkerId(
               "marker_${placeDetails['geometry']['location']['lat']}_${placeDetails['geometry']['location']['lng']}"),
           position: LatLng(placeDetails['geometry']['location']['lat'],
               placeDetails['geometry']['location']['lng']),
         );
-        setState(() {
-          markers.add(newMarker);
-          _placeList.add(ModelAddress(
-              mainText: '${placeDetails['name']}',
-              description: '${placeDetails['formatted_address']}'));
-        });
+        if (placeDetails.containsKey('photos')) {
+          setState(() {
+            markers.add(newMarker);
+            _placeList.add(ModelAddress(
+                mainText: '${placeDetails['name']}',
+                description: '${placeDetails['formatted_address']}',
+                imageUrl:
+                    'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${placeDetails['photos'][0]['photo_reference']}&key=${Secrate.googleMapKey}'));
+          });
+        } else {
+          setState(() {
+            markers.add(newMarker);
+            _placeList.add(ModelAddress(
+                mainText: '${placeDetails['name']}',
+                description: '${placeDetails['formatted_address']}',
+                imageUrl: '${placeDetails['icon']}'));
+          });
+        }
       }
     });
   }
@@ -271,32 +283,43 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
   }
 
   openBottomSheet() {
-    return showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          if (_placeList.isEmpty) {
-            return Center(
-              child: Text('No location available'),
-            );
-          }
-          return ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              itemCount: _placeList.length,
-              itemBuilder: (context, index) {
-                var addressDetails = _placeList[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
-                  child: Column(
-                    children: [
-                      Text(
-                          '${addressDetails.mainText},${addressDetails.description}'),
-                    ],
-                  ),
-                );
-              });
-        });
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                itemCount: _placeList.length,
+                itemBuilder: (context, index) {
+                  var addressDetails = _placeList[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Row(
+                      children: [
+                        Image.network('${addressDetails.imageUrl}', height: 50,
+                            errorBuilder: (context, error, stackTrace) {
+                          return Text('No image found');
+                        }),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: Text(
+                                '${addressDetails.mainText},${addressDetails.description}'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget actionButtion(Icon icon, Function ontap) {

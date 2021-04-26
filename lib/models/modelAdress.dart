@@ -5,12 +5,13 @@ class ModelAddress {
   String pincode;
   String mainText;
   String description;
-
+  String imageUrl;
   ModelAddress(
       {this.district,
       this.latitude,
       this.longitude,
       this.pincode,
       this.description,
-      this.mainText});
+      this.mainText,
+      this.imageUrl});
 }
